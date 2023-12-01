@@ -1,0 +1,26 @@
+{
+  "name": "familytree",
+  "version": "1.0.0",
+  "description": "Creating application for managing books built with MERN stack",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "redis": "^4.6.11"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1",
+    "dotenv": "^16.3.1",
+    "nodemon": "^3.0.1"
+  }
+}
