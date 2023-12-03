@@ -55,16 +55,18 @@ const setRelationship = async (command) => {
             let textLength = initialTree.textLength ? Number(initialTree.textLength) : 0;
             initialTree = initialTree.textValue;
             if(initialTree && (initialResult[name2].parent)) {
-                initialTree = `- ${name1} (${initialResult[name1].gender == 'male' ? 'M' : 'F'})` + '\n' + ' ' + initialTree;
+                const newLine = `- ${name1} (${initialResult[name1].gender == 'male' ? 'M' : 'F'})`;
                 initialResult[name2].parent = false;
                 initialResult[name1].parent = true;
 
                 initialResult[name1].type = 'parent';                
                 for (let key in initialResult) {
                     if(key != name1) {
-                        initialResult[name2].gap += 2;
+                        initialResult[key].gap += 2;
                     }
                 }
+                initialTree = initialTree.split('\n').map(line => '  ' + line).join('\n');
+                initialTree = `${newLine}\n${initialTree}`;
                 textLength++;
             } else if(initialTree) {
                 let prevValue = await client.get('prevValue');
@@ -74,21 +76,20 @@ const setRelationship = async (command) => {
                 let value = `- ${name2} (${initialResult[name2].gender == 'male' ? 'M' : 'F'})`;
                 if(prevValue.type == initialResult[name2].type) {
                     let gapValue = initialResult[name1].gap + 2;
-                    initialResult[name2].gap = gapValue;
-                    while (gapValue > 0) {
-                        value = ' ' + value;
-                        gapValue--;
+                    if(gapValue > prevValue.gap) {
+                        prevValue.gap = gapValue;
                     }
+                    initialResult[name2].gap = gapValue;
+                    const indentation = ' '.repeat(gapValue);
+                    value = indentation + value;
                     initialTree += value;
-                    prevValue.gap = gapValue;
+                    
                     await client.set('prevValue', JSON.stringify(prevValue));
                 } else {
                     let gapValue = Number(prevValue.gap) + 2;
                     initialResult[name2].gap = gapValue;
-                    while (gapValue > 0) {
-                        value = ' ' + value;
-                        gapValue--;
-                    }
+                    const indentation = ' '.repeat(gapValue);
+                    value = indentation + value;
                     initialTree += value;
                 }
                 textLength++;
