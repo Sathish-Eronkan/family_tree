@@ -12,24 +12,31 @@ const CreateScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      if(command.includes('show_tree')) {
-        const {data} = await axios.get('/api/result');
-        console.log('data ',data);
-        setTextData(data.textValue);
-        setShowTree(true);
-        setTextLength(data.textLength);
-      } else {
-        const {data} = await axios.post('/api/command',{
-          command
-        });
-        if(data.message.includes('not')) {
-          toast.error(data.message);
+      let commands = command.split('\n');
+      console.log('commands ',commands);
+      for(let i=0; i< commands.length; i++) {
+        let eachCommand = commands[i];
+        console.log('eachCommand ',eachCommand);
+        if(eachCommand.includes('show_tree')) {
+          const {data} = await axios.get('/api/result');
+          console.log('data ',data);
+          setTextData(data.textValue);
+          setShowTree(true);
+          setTextLength(data.textLength);
         } else {
-          toast.success(data.message);
+          console.log('inside else ',eachCommand);
+          const {data} = await axios.post('/api/command',{
+            command: eachCommand
+          });
+          if(data.message.includes('not')) {
+            toast.error(data.message);
+          } else {
+            toast.success(data.message);
+          }
+          setCommand('');
+          setTextData('');
+          setShowTree(false);
         }
-        setCommand('');
-        setTextData('');
-        setShowTree(false);
       }
     } catch (err) {
        toast.error(err?.data?.message || err.error);
@@ -54,7 +61,8 @@ const CreateScreen = () => {
                 <Form.Group className='my-2' controlId='command'>
                   <Form.Label>Command</Form.Label>
                   <Form.Control
-                      type='text'
+                      as="textarea"
+                      rows={5}
                       placeholder='Enter Command'
                       value={command}
                       required
@@ -76,7 +84,8 @@ const CreateScreen = () => {
               <Form.Group className='my-2' controlId='command'>
                 <Form.Label>Command</Form.Label>
                 <Form.Control
-                    type='text'
+                    as="textarea"
+                    rows={5}
                     placeholder='Enter Command'
                     value={command}
                     required
